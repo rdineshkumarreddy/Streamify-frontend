@@ -1,0 +1,220 @@
+/* src/styles/components.css */
+/* Video card */
+.video-card {
+  @apply bg-youtube-dark-2 rounded-lg overflow-hidden transition-transform hover:scale-[1.02] hover:shadow-lg;
+}
+
+.video-thumbnail {
+  @apply relative aspect-video bg-youtube-gray overflow-hidden;
+}
+
+.video-duration {
+  @apply absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded;
+}
+
+.video-info {
+  @apply p-3;
+}
+
+.video-title {
+  @apply text-white font-medium text-sm line-clamp-2;
+}
+
+.video-meta {
+  @apply text-youtube-text-secondary text-xs mt-1;
+}
+
+/* Comment */
+.comment {
+  @apply py-3 border-b border-youtube-gray/30 last:border-0;
+}
+
+.comment-actions {
+  @apply flex items-center space-x-4 text-sm text-youtube-text-secondary mt-2;
+}
+
+/* Skeleton loader */
+.skeleton {
+  @apply bg-youtube-gray/30 animate-pulse rounded;
+}
+
+/* Modal */
+.modal-overlay {
+  @apply fixed inset-0 bg-black/70 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-youtube-dark-2 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto;
+}
+
+.modal-header {
+  @apply px-6 py-4 border-b border-youtube-gray flex justify-between items-center;
+}
+
+.modal-body {
+  @apply p-6;
+}
+
+.modal-footer {
+  @apply px-6 py-4 border-t border-youtube-gray flex justify-end space-x-3;
+}
+
+/* Toast */
+.Toastify__toast {
+  @apply bg-youtube-dark-2 text-white border border-youtube-gray rounded-md;
+}
+
+.Toastify__progress-bar {
+  @apply bg-youtube-red;
+}
+
+/* Tooltip */
+.tooltip {
+  @apply invisible absolute bg-youtube-dark-2 text-white text-sm px-2 py-1 rounded whitespace-nowrap z-50;
+}
+
+.has-tooltip:hover .tooltip {
+  @apply visible;
+}
+
+/* Custom checkbox */
+.custom-checkbox {
+  @apply h-4 w-4 rounded border-youtube-gray text-youtube-red focus:ring-youtube-red;
+}
+
+/* Custom radio */
+.custom-radio {
+  @apply h-4 w-4 border-youtube-gray text-youtube-red focus:ring-youtube-red;
+}
+
+/* Custom select */
+.custom-select {
+  @apply block w-full pl-3 pr-10 py-2 text-base bg-youtube-dark-2 border-youtube-gray focus:outline-none focus:ring-youtube-red focus:border-youtube-red sm:text-sm rounded-md;
+}
+
+/* Custom input */
+.custom-input {
+  @apply block w-full px-3 py-2 bg-youtube-dark-2 border border-youtube-gray rounded-md shadow-sm focus:outline-none focus:ring-youtube-red focus:border-youtube-red sm:text-sm;
+}
+
+/* Custom textarea */
+.custom-textarea {
+  @apply block w-full px-3 py-2 bg-youtube-dark-2 border border-youtube-gray rounded-md shadow-sm focus:outline-none focus:ring-youtube-red focus:border-youtube-red sm:text-sm;
+}
+
+/* Avatar */
+.avatar {
+  @apply rounded-full overflow-hidden;
+}
+
+.avatar-sm {
+  @apply w-8 h-8;
+}
+
+.avatar-md {
+  @apply w-10 h-10;
+}
+
+.avatar-lg {
+  @apply w-12 h-12;
+}
+
+/* Badge */
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+  @apply bg-youtube-red/20 text-youtube-red;
+}
+
+.badge-secondary {
+  @apply bg-youtube-gray/20 text-youtube-text-secondary;
+}
+
+/* Alert */
+.alert {
+  @apply p-4 rounded-lg;
+}
+
+.alert-success {
+  @apply bg-green-900/30 text-green-400 border border-green-800;
+}
+
+.alert-error {
+  @apply bg-red-900/30 text-red-400 border border-red-800;
+}
+
+/* Card */
+.card {
+  @apply bg-youtube-dark-2 rounded-lg overflow-hidden border border-youtube-gray;
+}
+
+.card-header {
+  @apply px-4 py-3 border-b border-youtube-gray;
+}
+
+.card-body {
+  @apply p-4;
+}
+
+.card-footer {
+  @apply px-4 py-3 border-t border-youtube-gray bg-youtube-dark-2/50;
+}
+
+/* Tabs */
+.tabs {
+  @apply flex border-b border-youtube-gray;
+}
+
+.tab {
+  @apply px-4 py-2 text-youtube-text-secondary hover:text-white cursor-pointer;
+}
+
+.tab.active {
+  @apply text-youtube-red border-b-2 border-youtube-red;
+}
+
+/* Dropdown */
+.dropdown {
+  @apply relative inline-block;
+}
+
+.dropdown-menu {
+  @apply absolute right-0 mt-2 w-48 bg-youtube-dark-2 rounded-md shadow-lg py-1 z-50 border border-youtube-gray;
+}
+
+.dropdown-item {
+  @apply block px-4 py-2 text-sm text-youtube-text hover:bg-youtube-gray hover:text-white;
+}
+
+/* Progress */
+.progress {
+  @apply w-full h-2 bg-youtube-gray rounded overflow-hidden;
+}
+
+.progress-bar {
+  @apply h-full bg-youtube-red rounded transition-all duration-300;
+}
+
+/* Divider */
+.divider {
+  @apply border-t border-youtube-gray my-4;
+}
+
+/* Empty state */
+.empty-state {
+  @apply text-center py-12;
+}
+
+.empty-state-icon {
+  @apply mx-auto w-16 h-16 text-youtube-text-secondary mb-4;
+}
+
+.empty-state-title {
+  @apply text-lg font-medium text-white mb-2;
+}
+
+.empty-state-description {
+  @apply text-youtube-text-secondary max-w-md mx-auto;
+}

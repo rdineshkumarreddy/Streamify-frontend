@@ -1,0 +1,126 @@
+/* src/styles/layout.css */
+/* Main layout */
+.layout {
+  @apply min-h-screen flex flex-col;
+}
+
+/* Container */
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Grid */
+.grid-1 {
+  @apply grid grid-cols-1 gap-4;
+}
+
+.grid-2 {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+}
+
+.grid-3 {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+.grid-4 {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+}
+
+/* Flex utilities */
+.flex-center {
+  @apply flex items-center justify-center;
+}
+
+.flex-between {
+  @apply flex items-center justify-between;
+}
+
+.flex-start {
+  @apply flex items-start;
+}
+
+.flex-col-center {
+  @apply flex flex-col items-center justify-center;
+}
+
+/* Spacing */
+.space-y-1 > * + * {
+  @apply mt-1;
+}
+
+.space-y-2 > * + * {
+  @apply mt-2;
+}
+
+.space-y-3 > * + * {
+  @apply mt-3;
+}
+
+.space-y-4 > * + * {
+  @apply mt-4;
+}
+
+.space-x-2 > * + * {
+  @apply ml-2;
+}
+
+.space-x-3 > * + * {
+  @apply ml-3;
+}
+
+.space-x-4 > * + * {
+  @apply ml-4;
+}
+
+/* Aspect ratios */
+.aspect-video {
+  @apply relative w-full h-0 pb-[56.25%];
+}
+
+.aspect-video > * {
+  @apply absolute top-0 left-0 w-full h-full;
+}
+
+/* Responsive iframe */
+.responsive-iframe {
+  @apply w-full h-0 pb-[56.25%] relative;
+}
+
+.responsive-iframe iframe {
+  @apply absolute top-0 left-0 w-full h-full;
+}
+
+/* Custom scrollbar for specific elements */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f3f #1f1f1f;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-youtube-dark-2;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-youtube-gray rounded-full;
+}
+
+/* Page transitions */
+.page-enter {
+  @apply opacity-0;
+}
+
+.page-enter-active {
+  @apply opacity-100 transition-opacity duration-300;
+}
+
+.page-exit {
+  @apply opacity-100;
+}
+
+.page-exit-active {
+  @apply opacity-0 transition-opacity duration-300;
+}
