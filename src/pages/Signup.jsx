@@ -96,11 +96,16 @@ const Signup = () => {
     data.append('password', formData.password);
     data.append('avatar', formData.avatar);
 
-    const { success, error } = await signup(data);
+    const { success, error, isVerified } = await signup(data);
     
     if (success) {
-      toast.success('OTP sent to your email!');
-      setShowOtpInput(true);
+      if (isVerified) {
+        toast.success('Registration successful! Redirecting to login...');
+        setTimeout(() => navigate('/login'), 1500);
+      } else {
+        toast.success('OTP sent to your email!');
+        setShowOtpInput(true);
+      }
     } else {
       toast.error(error);
     }

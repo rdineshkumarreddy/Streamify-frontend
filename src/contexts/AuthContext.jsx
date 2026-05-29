@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
       // For now, let's just return success so component can navigate to login.
       // Or we can chain a login call here.
       // Let's keep it simple: return success.
-      return { success: true };
+      return { success: true, isVerified: data.data.isVerified };
     } catch (error) {
        return { success: false, error: error.response?.data?.message || 'Signup failed' };
     }
