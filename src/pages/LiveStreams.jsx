@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Radio, Users, Eye } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
+import { axiosInstance as axios } from '../api/axiosInstance';
 
 const LiveStreams = () => {
   const [streams, setStreams] = useState([]);
@@ -18,7 +18,7 @@ const LiveStreams = () => {
 
   const fetchLiveStreams = async () => {
     try {
-      const { data } = await axios.get('/api/v1/livestreams/active');
+      const { data } = await axios.get('/livestreams/active');
       setStreams(data.data.streams);
     } catch (error) {
       console.error('Error fetching live streams:', error);

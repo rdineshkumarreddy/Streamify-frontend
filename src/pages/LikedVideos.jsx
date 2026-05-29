@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { axiosInstance as axios } from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
 import VideoCard from '../components/VideoCard';
 import { ThumbsUp } from 'lucide-react';
@@ -12,11 +12,8 @@ const LikedVideos = () => {
     const fetchLikedVideos = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
         
-        const response = await axios.get('/api/v1/likes/videos', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await axios.get('/likes/videos');
         
         // Transform the response data - backend returns likes with populated video
         const likedVideos = response.data.data

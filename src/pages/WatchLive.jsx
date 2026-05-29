@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Users, Heart, Send, Radio, ArrowLeft } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
+import { axiosInstance as axios } from '../api/axiosInstance';
 import { useAuth } from '../contexts/AuthContext';
 
 const WatchLive = () => {
@@ -21,11 +21,9 @@ const WatchLive = () => {
     fetchChatMessages();
 
     // Call API to join stream
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios.patch(`/api/v1/livestreams/${streamId}/viewers`, { action: 'join' }, {
-        headers: { Authorization: `Bearer ${token}` }
-      }).catch(err => console.error("Failed to join viewer count", err));
+    if (localStorage.getItem('token')) {
+      axios.patch(`/livestreams/${streamId}/viewers`, { action: 'join' })
+        .catch(err => console.error("Failed to join viewer count", err));
     }
 
     // Poll for updates
@@ -37,10 +35,9 @@ const WatchLive = () => {
       clearInterval(chatInterval);
       
       // Call API to leave stream
-      if (token) {
-        axios.patch(`/api/v1/livestreams/${streamId}/viewers`, { action: 'leave' }, {
-          headers: { Authorization: `Bearer ${token}` }
-        }).catch(err => console.error("Failed to leave viewer count", err));
+      if (localStorage.getItem('token')) {
+        axios.patch(`/livestreams/${streamId}/viewers`, { action: 'leave' })
+          .catch(err => console.error("Failed to leave viewer count", err));
       }
     };
   }, [streamId]);
@@ -54,7 +51,7 @@ const WatchLive = () => {
 
   const fetchStreamDetails = async () => {
     try {
-      const { data } = await axios.get(`/api/v1/livestreams/${streamId}`);
+      const { data } = await axios.get(`/livestreams/${streamId}`);
       setStream(data.data);
       
       if (!data.data.isLive) {
@@ -72,7 +69,7 @@ const WatchLive = () => {
 
   const fetchChatMessages = async () => {
     try {
-      const { data } = await axios.get(`/api/v1/livestreams/${streamId}/chat`);
+      const { data } = await axios.get(`/livestreams/${streamId}/chat`);
       setChatMessages(data.data);
     } catch (error) {
       console.error('Error fetching chat:', error);
@@ -84,11 +81,9 @@ const WatchLive = () => {
     if (!newMessage.trim() || !user) return;
 
     try {
-      const token = localStorage.getItem('token');
       const { data } = await axios.post(
-        `/api/v1/livestreams/${streamId}/chat`,
-        { message: newMessage },
-        { headers: { Authorization: `Bearer ${token}` } }
+        `/livestreams/${streamId}/chat`,
+        { message: newMessage }
       );
 
       setChatMessages(prev => [...prev, data.data]);
@@ -103,11 +98,9 @@ const WatchLive = () => {
     if (!user || hasLiked) return;
 
     try {
-      const token = localStorage.getItem('token');
       await axios.post(
-        `/api/v1/livestreams/${streamId}/like`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        `/livestreams/${streamId}/like`,
+        {}
       );
 
       setHasLiked(true);

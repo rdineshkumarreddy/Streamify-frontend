@@ -1,7 +1,7 @@
 // frontend/src/contexts/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { axiosInstance as axios } from '../api/axiosInstance';
 
 const AuthContext = createContext(null);
 
@@ -16,9 +16,7 @@ export const AuthProvider = ({ children }) => {
       // Verify token and fetch user data
       const verifyToken = async () => {
         try {
-          const { data } = await axios.get('/api/v1/users/current-user', {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          const { data } = await axios.get('/users/current-user');
           setUser(data.data); // data.data because ApiResponse wrapper has .data property for payload
         } catch (error) {
           console.error('Token verification failed:', error);
@@ -41,7 +39,7 @@ export const AuthProvider = ({ children }) => {
         ? { email, password } 
         : { username: email, password };
       
-      const { data } = await axios.post('/api/v1/users/login', loginData);
+      const { data } = await axios.post('/users/login', loginData);
       localStorage.setItem('token', data.data.accessToken);
       setUser(data.data.user);
       navigate('/');
@@ -54,7 +52,7 @@ export const AuthProvider = ({ children }) => {
   const signup = async (userData) => {
     try {
       // userData can be JSON or FormData. If FormData, axios sets header automatically.
-      const { data } = await axios.post('/api/v1/users/register', userData);
+      const { data } = await axios.post('/users/register', userData);
       // Registration usually returns user but might not return token automatically depending on backend 
       // Backend RegisterUser returns: createdUser (no token).
       // So checking backend: Step 173 RegisterUser returns data: createdUser.
@@ -73,7 +71,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifyOtp = async (email, otp) => {
     try {
-      await axios.post('/api/v1/users/verify-otp', { email, otp });
+      await axios.post('/users/verify-otp', { email, otp });
       return { success: true };
     } catch (error) {
       return { success: false, error: error.response?.data?.message || 'Verification failed' };
@@ -82,7 +80,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkUsernameAvailability = async (username) => {
     try {
-      const { data } = await axios.get(`/api/v1/users/check-username?username=${username}`);
+      const { data } = await axios.get(`/users/check-username?username=${username}`);
       return data.data.available;
     } catch (error) {
       return false;
@@ -91,7 +89,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkEmailAvailability = async (email) => {
     try {
-      const { data } = await axios.get(`/api/v1/users/check-email?email=${email}`);
+      const { data } = await axios.get(`/users/check-email?email=${email}`);
       return data.data.available;
     } catch (error) {
       return false;

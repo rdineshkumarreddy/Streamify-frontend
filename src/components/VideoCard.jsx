@@ -5,7 +5,7 @@ import { formatViews } from '../utils/formatViews';
 import { MoreVertical, Trash2, Edit2, Play, Share2, Copy, Facebook, Linkedin, Twitter, MessageCircle, X, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
+import { axiosInstance as axios } from '../api/axiosInstance';
 import { toggleWatchLater } from '../api/playlist.api';
 
 const ShareModal = ({ isOpen, onClose, videoId, videoTitle }) => {
@@ -120,10 +120,7 @@ const VideoCard = ({ video, onDeleteSuccess }) => {
     if (!window.confirm("Are you sure you want to delete this video?")) return;
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`/api/v1/videos/${_id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.delete(`/videos/${_id}`);
       toast.success("Video deleted successfully");
       if (onDeleteSuccess) onDeleteSuccess(_id);
       else window.location.reload();

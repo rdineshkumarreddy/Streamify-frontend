@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Radio, Camera, Mic, MicOff, VideoOff, X, Users, Heart, MessageCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
+import { axiosInstance as axios } from '../api/axiosInstance';
 
 const GoLive = () => {
   const [stream, setStream] = useState(null);
@@ -100,16 +100,12 @@ const GoLive = () => {
 
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('token');
       const { data } = await axios.post(
-        '/api/v1/livestreams/create',
+        '/livestreams/create',
         {
           title: streamTitle,
           description: streamDescription,
           category,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
         }
       );
 
@@ -120,7 +116,7 @@ const GoLive = () => {
       // Fetch actual viewer count from backend instead of random simulation
       const viewerInterval = setInterval(async () => {
         try {
-          const streamData = await axios.get(`/api/v1/livestreams/${data.data._id}`);
+          const streamData = await axios.get(`/livestreams/${data.data._id}`);
           if (streamData.data?.data) {
             setViewerCount(streamData.data.data.viewerCount || 0);
             setLikes(streamData.data.data.likes || 0);
@@ -145,13 +141,9 @@ const GoLive = () => {
     if (!liveStreamId) return;
 
     try {
-      const token = localStorage.getItem('token');
       await axios.post(
-        `/api/v1/livestreams/${liveStreamId}/end`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        `/livestreams/${liveStreamId}/end`,
+        {}
       );
 
       // Clear viewer interval

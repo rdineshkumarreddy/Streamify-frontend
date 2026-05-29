@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import { axiosInstance as axios } from '../api/axiosInstance';
 
 const FileUploadArea = ({ 
   name, 
@@ -244,12 +244,10 @@ const UploadVideo = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post('/api/v1/videos/publishAVideo', data, {
+      const response = await axios.post('/videos/publishAVideo', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        withCredentials: true
+        }
       });
       
       toast.success('Video uploaded successfully!');

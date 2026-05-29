@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { axiosInstance as axios } from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
 
 const ForgotPassword = () => {
@@ -20,7 +20,7 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post('/api/v1/users/forgot-password', { email });
+      const response = await axios.post('/users/forgot-password', { email });
       if (response.data.success) {
         toast.success(response.data.message || 'OTP sent to your email');
         setStep(2);
@@ -40,7 +40,7 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post('/api/v1/users/reset-password', { email, otp, newPassword });
+      const response = await axios.post('/users/reset-password', { email, otp, newPassword });
       if (response.data.success) {
         toast.success('Password reset successfully! You can now login.');
         navigate('/login');
