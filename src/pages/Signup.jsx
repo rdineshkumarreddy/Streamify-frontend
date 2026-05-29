@@ -96,20 +96,26 @@ const Signup = () => {
     data.append('password', formData.password);
     data.append('avatar', formData.avatar);
 
-    const { success, error, isVerified } = await signup(data);
-    
-    if (success) {
-      if (isVerified) {
-        toast.success('Registration successful! Redirecting to login...');
-        setTimeout(() => navigate('/login'), 1500);
+    try {
+      const { success, error, isVerified } = await signup(data);
+      
+      if (success) {
+        if (isVerified) {
+          toast.success('Registration successful! Redirecting to login...');
+          setTimeout(() => navigate('/login'), 1500);
+        } else {
+          toast.success('OTP sent to your email!');
+          setShowOtpInput(true);
+        }
       } else {
-        toast.success('OTP sent to your email!');
-        setShowOtpInput(true);
+        toast.error(error);
       }
-    } else {
-      toast.error(error);
+    } catch (err) {
+      console.error("Signup error:", err);
+      toast.error("An unexpected error occurred during signup");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleVerifyOtp = async (e) => {
