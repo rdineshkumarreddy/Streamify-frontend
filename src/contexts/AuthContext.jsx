@@ -52,7 +52,11 @@ export const AuthProvider = ({ children }) => {
   const signup = async (userData) => {
     try {
       // userData can be JSON or FormData. If FormData, axios sets header automatically.
-      const { data } = await axios.post('/users/register', userData);
+      const { data } = await axios.post('/users/register', userData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       // Registration usually returns user but might not return token automatically depending on backend 
       // Backend RegisterUser returns: createdUser (no token).
       // So checking backend: Step 173 RegisterUser returns data: createdUser.
