@@ -8,6 +8,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -23,6 +24,9 @@ const ForgotPassword = () => {
       const response = await axios.post('/users/forgot-password', { email });
       if (response.data.success) {
         toast.success(response.data.message || 'OTP sent to your email');
+        if (response.data.data?.otp) {
+          setForgotOtp(response.data.data.otp);
+        }
         setStep(2);
       }
     } catch (error) {
@@ -88,6 +92,11 @@ const ForgotPassword = () => {
             </form>
           ) : (
             <form onSubmit={handleResetPassword} className="space-y-6">
+              {forgotOtp && (
+                <div className="bg-blue-600/10 border border-blue-500/20 p-3 rounded-lg text-sm text-blue-400 text-center font-semibold mb-4">
+                  Testing OTP: <span className="text-white text-base select-all">{forgotOtp}</span>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">OTP</label>
                 <input
