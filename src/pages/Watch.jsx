@@ -41,6 +41,8 @@ import { createTweet } from '../api/tweet.api';
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [showTweetModal, setShowTweetModal] = useState(false);
   const [tweetContent, setTweetContent] = useState('');
+  const [activeReplyCommentId, setActiveReplyCommentId] = useState(null);
+  const [replyText, setReplyText] = useState('');
   const viewCounted = useRef(null);
 
   // Increment views ONLY when ID changes
@@ -211,6 +213,82 @@ import { createTweet } from '../api/tweet.api';
     } catch (err) {
       console.error('Error adding comment:', err);
       toast.error('Failed to add comment. Please try again.');
+    }
+  };
+
+  const handleCommentLike = async (commentId) => {
+    if (!user) {
+      navigate('/login', { state: { from: `/watch/${id}` } });
+      return;
+    }
+    
+    try {
+      await axios.post(`/likes/comment/${commentId}`);
+      
+      const updateCommentLikes = (list) => {
+        return list.map(c => {
+          if (c._id === commentId) {
+            return {
+              ...c,
+              isLiked: !c.isLiked,
+              likes: c.isLiked ? Math.max(0, (c.likes || 0) - 1) : (c.likes || 0) + 1
+            };
+          }
+          if (c.replies && c.replies.length > 0) {
+            return {
+              ...c,
+              replies: updateCommentLikes(c.replies)
+            };
+          }
+          return c;
+        });
+      };
+      
+      setComments(prev => updateCommentLikes(prev));
+    } catch (err) {
+      console.error('Error toggling comment like:', err);
+      toast.error('Failed to update comment like.');
+    }
+  };
+
+  const handleReplySubmit = async (e, commentId) => {
+    e.preventDefault();
+    if (!replyText.trim()) return;
+    
+    if (!user) {
+      navigate('/login', { state: { from: `/watch/${id}` } });
+      return;
+    }
+    
+    try {
+      const response = await axios.post(`/comments/${id}`, {
+        content: replyText,
+        parentCommentId: commentId
+      });
+      
+      const newReply = {
+        ...response.data.data,
+        owner: user,
+        likes: 0,
+        isLiked: false
+      };
+      
+      setComments(prev => prev.map(c => {
+        if (c._id === commentId) {
+          return {
+            ...c,
+            replies: [...(c.replies || []), newReply]
+          };
+        }
+        return c;
+      }));
+      
+      setReplyText('');
+      setActiveReplyCommentId(null);
+      toast.success('Reply added successfully');
+    } catch (err) {
+      console.error('Error adding reply:', err);
+      toast.error('Failed to add reply.');
     }
   };
 
@@ -464,20 +542,117 @@ import { createTweet } from '../api/tweet.api';
                           <p className="text-gray-300 text-sm">{comment.content}</p>
                         </div>
                         <div className="flex items-center space-x-4 mt-2 ml-2 text-xs text-gray-400">
-                          <button className="flex items-center space-x-1 hover:text-white">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <button 
+                            onClick={() => handleCommentLike(comment._id)}
+                            className={`flex items-center space-x-1 ${comment.isLiked ? 'text-blue-500' : 'hover:text-white'}`}
+                          >
+                            <svg className="w-4 h-4" fill={comment.isLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                             </svg>
                             <span>{comment.likes || 0}</span>
                           </button>
-                          <button className="flex items-center space-x-1 hover:text-white">
-                            <svg className="w-4 h-4 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                            </svg>
-                            <span>{comment.dislikes || 0}</span>
+                          <button 
+                            onClick={() => {
+                              setActiveReplyCommentId(activeReplyCommentId === comment._id ? null : comment._id);
+                              setReplyText('');
+                            }}
+                            className="hover:text-white"
+                          >
+                            Reply
                           </button>
-                          <button className="hover:text-white">Reply</button>
                         </div>
+
+                        {/* Reply Form */}
+                        {activeReplyCommentId === comment._id && (
+                          <form onSubmit={(e) => handleReplySubmit(e, comment._id)} className="mt-3 ml-6 flex space-x-3">
+                            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center">
+                              {user?.avatar ? (
+                                <img 
+                                  src={user.avatar} 
+                                  alt={user.username} 
+                                  className="h-full w-full rounded-full object-cover"
+                                />
+                              ) : (
+                                <span className="text-xs font-semibold">
+                                  {user?.username?.charAt(0).toUpperCase() || 'U'}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <input
+                                type="text"
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder="Add a reply..."
+                                className="w-full bg-transparent border-b border-gray-700 focus:border-blue-500 focus:outline-none text-white text-xs py-1.5"
+                                autoFocus
+                              />
+                              <div className="flex justify-end mt-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => setActiveReplyCommentId(null)}
+                                  className="px-3 py-1 text-[11px] text-gray-400 hover:text-white mr-1"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  disabled={!replyText.trim()}
+                                  className={`px-3 py-1 rounded-full text-[11px] ${replyText.trim() ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-700 text-gray-500 cursor-not-allowed'}`}
+                                >
+                                  Reply
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        )}
+
+                        {/* Replies List */}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <div className="mt-4 space-y-4 ml-6 border-l border-gray-800 pl-4">
+                            {comment.replies.map(reply => (
+                              <div key={reply._id} className="flex space-x-3">
+                                <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center">
+                                  {reply.owner?.avatar ? (
+                                    <img 
+                                      src={reply.owner.avatar} 
+                                      alt={reply.owner.username} 
+                                      className="h-full w-full rounded-full object-cover"
+                                    />
+                                  ) : (
+                                    <span className="text-xs font-semibold">
+                                      {reply.owner?.username?.charAt(0).toUpperCase() || 'U'}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="bg-gray-850 rounded-lg p-2.5">
+                                    <div className="flex items-center space-x-2 mb-1">
+                                      <span className="font-medium text-xs">
+                                        {reply.owner?.username || 'Unknown User'}
+                                      </span>
+                                      <span className="text-[10px] text-gray-500">
+                                        {formatDate(reply.createdAt)}
+                                      </span>
+                                    </div>
+                                    <p className="text-gray-300 text-xs">{reply.content}</p>
+                                  </div>
+                                  <div className="flex items-center space-x-4 mt-1.5 ml-1 text-[10px] text-gray-500">
+                                    <button 
+                                      onClick={() => handleCommentLike(reply._id)}
+                                      className={`flex items-center space-x-1 ${reply.isLiked ? 'text-blue-500' : 'hover:text-white'}`}
+                                    >
+                                      <svg className="w-3.5 h-3.5" fill={reply.isLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                                      </svg>
+                                      <span>{reply.likes || 0}</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))
