@@ -19,6 +19,7 @@ const Signup = () => {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
+  const [signupOtp, setSignupOtp] = useState('');
   const [usernameStatus, setUsernameStatus] = useState({ loading: false, available: null, message: '' });
   const [emailStatus, setEmailStatus] = useState({ loading: false, available: null, message: '' });
   const { signup, verifyOtp, checkUsernameAvailability, checkEmailAvailability } = useAuth();
@@ -97,7 +98,7 @@ const Signup = () => {
     data.append('avatar', formData.avatar);
 
     try {
-      const { success, error, isVerified } = await signup(data);
+      const { success, error, isVerified, otp: receivedOtp } = await signup(data);
       
       if (success) {
         if (isVerified) {
@@ -105,6 +106,9 @@ const Signup = () => {
           setTimeout(() => navigate('/login'), 1500);
         } else {
           toast.success('OTP sent to your email!');
+          if (receivedOtp) {
+            setSignupOtp(receivedOtp);
+          }
           setShowOtpInput(true);
         }
       } else {
@@ -251,6 +255,11 @@ const Signup = () => {
       ) : (
         <form onSubmit={handleVerifyOtp} className="space-y-4">
           <p className="text-gray-300 text-sm">An OTP has been sent to {formData.email}. Please enter it below to verify your account.</p>
+          {signupOtp && (
+            <div className="bg-blue-600/10 border border-blue-500/20 p-3 rounded-lg text-sm text-blue-400 text-center font-semibold">
+              Testing OTP: <span className="text-white text-base select-all">{signupOtp}</span>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-300">Enter OTP</label>
             <input
