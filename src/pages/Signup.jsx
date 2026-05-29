@@ -154,13 +154,12 @@ const Signup = () => {
               </div>
               <label className="absolute bottom-0 right-0 bg-blue-600 p-1.5 rounded-full cursor-pointer hover:bg-blue-700 transition-colors">
                 <Upload className="w-4 h-4 text-white" />
-                <input
+                 <input
                   type="file"
                   name="avatar"
                   accept="image/*"
                   onChange={handleChange}
                   className="hidden"
-                  required
                 />
               </label>
             </div>
